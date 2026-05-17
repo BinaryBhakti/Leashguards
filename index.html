@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leashguards | Contract Intelligence</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-mark">LG</div>
+          <div>
+            <h1>Leashguards</h1>
+            <p>AI contract risk review for documents before you sign</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <span id="apiStatus" class="api-status checking">Checking API</span>
+          <button id="printButton" class="secondary-action" disabled>Print</button>
+          <button id="downloadButton" class="secondary-action" disabled>Text report</button>
+          <button id="pdfButton" class="secondary-action" disabled>PDF</button>
+          <button id="copyReportButton" class="secondary-action" disabled>Copy</button>
+        </div>
+      </header>
+
+      <section class="prep-grid" aria-label="Contract review setup">
+        <section class="upload-hero">
+          <div>
+            <p class="eyebrow">Start here</p>
+            <h2>Upload or paste a contract</h2>
+            <p class="helper-copy">Use PDF, DOCX, scanned images, or plain text. Leashguards extracts clauses and shows the exact evidence behind each finding.</p>
+          </div>
+
+          <label class="file-drop">
+            <input id="fileInput" type="file" multiple accept=".txt,.md,.text,.csv,.rtf,.pdf,.docx,.png,.jpg,.jpeg,.webp,.bmp,.tif,.tiff" />
+            <strong>Choose contract files</strong>
+            <span>PDF, DOCX, images, RTF, CSV, Markdown, or TXT</span>
+          </label>
+
+          <div class="document-meta">
+            <label class="field">
+              <span>OCR language</span>
+              <select id="ocrLanguage">
+                <option value="eng">English</option>
+                <option value="hin">Hindi</option>
+                <option value="eng+hin">English + Hindi</option>
+                <option value="spa">Spanish</option>
+                <option value="fra">French</option>
+                <option value="deu">German</option>
+              </select>
+            </label>
+            <div class="meta-chip" id="wordCount">0 words</div>
+            <div class="meta-chip" id="parseStatus">Ready to parse</div>
+          </div>
+
+          <textarea id="contractText" spellcheck="true" placeholder="Or paste contract text here..."></textarea>
+        </section>
+
+        <aside class="settings-panel">
+          <section class="settings-card">
+            <div class="section-title">
+              <h2>Review settings</h2>
+            </div>
+            <label class="field">
+              <span>Project</span>
+              <input id="projectName" type="text" value="Default project" />
+            </label>
+            <div class="two-col">
+              <label class="field">
+                <span>Case</span>
+                <input id="caseName" type="text" value="Untitled review" />
+              </label>
+              <label class="field">
+                <span>Version</span>
+                <input id="versionLabel" type="text" value="v1" />
+              </label>
+            </div>
+            <label class="field">
+              <span>Agreement type</span>
+              <select id="contractType">
+                <option value="general">General contract</option>
+                <option value="employment">Employment</option>
+                <option value="freelance">Freelance or service</option>
+                <option value="vendor">Vendor or SaaS</option>
+                <option value="subscription">Subscription</option>
+                <option value="rental">Rental</option>
+                <option value="privacy">Privacy policy</option>
+                <option value="platform">Platform terms</option>
+                <option value="insurance">Insurance</option>
+                <option value="nda">NDA</option>
+                <option value="loan">Loan or finance</option>
+                <option value="purchase">Purchase agreement</option>
+                <option value="partnership">Partnership</option>
+              </select>
+            </label>
+            <div class="two-col">
+              <label class="field">
+                <span>Perspective</span>
+                <select id="perspective">
+                  <option value="individual">Individual</option>
+                  <option value="employee">Employee</option>
+                  <option value="freelancer">Freelancer</option>
+                  <option value="customer">Customer</option>
+                  <option value="tenant">Tenant</option>
+                  <option value="small business">Small business</option>
+                  <option value="organization">Organization</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Jurisdiction</span>
+                <select id="jurisdiction">
+                  <option value="not specified">Not specified</option>
+                  <option value="India">India</option>
+                  <option value="United States">United States</option>
+                  <option value="California, United States">California, United States</option>
+                  <option value="New York, United States">New York, United States</option>
+                  <option value="European Union / GDPR">European Union / GDPR</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Singapore">Singapore</option>
+                </select>
+              </label>
+            </div>
+            <label class="field">
+              <span>Other party</span>
+              <input id="counterparty" type="text" value="the other party" />
+            </label>
+            <label class="field">
+              <span>Reasoning</span>
+              <select id="llmProvider">
+                <option value="none">Local explainable engine</option>
+                <option value="gemini">Gemini if configured</option>
+                <option value="openai">OpenAI if configured</option>
+              </select>
+            </label>
+            <button id="analyzeButton" class="primary-action">Analyze contract</button>
+          </section>
+
+          <section class="settings-card compact">
+            <div class="section-title">
+              <h2>Samples</h2>
+            </div>
+            <div class="sample-grid" aria-label="Sample agreements">
+              <button data-sample="employment">Employment</button>
+              <button data-sample="subscription">Subscription</button>
+              <button data-sample="privacy">Privacy</button>
+              <button data-sample="freelance">Freelance</button>
+            </div>
+          </section>
+
+          <section class="settings-card compact account-card">
+            <div class="section-title">
+              <h2>Account</h2>
+              <span id="authStatus">Guest mode</span>
+            </div>
+            <details>
+              <summary>Save private history</summary>
+              <div class="auth-card">
+                <input id="authName" type="text" placeholder="Name" autocomplete="name" />
+                <input id="authEmail" type="email" placeholder="Email" autocomplete="email" />
+                <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" />
+                <div class="auth-actions">
+                  <button id="loginButton" type="button">Login</button>
+                  <button id="registerButton" type="button">Register</button>
+                </div>
+              </div>
+            </details>
+          </section>
+        </aside>
+      </section>
+
+      <section class="report-shell">
+        <header class="report-header">
+          <div>
+            <p class="eyebrow">Legal awareness report</p>
+            <h2 id="reportTitle">Start a review</h2>
+          </div>
+          <p class="report-note">Review the highlighted clause text before trusting any conclusion.</p>
+        </header>
+
+        <section id="emptyState" class="empty-state">
+          <div>
+            <span class="status-dot"></span>
+            <h3>Your report will appear here</h3>
+            <p>Upload a document, confirm the settings, and run the analysis.</p>
+          </div>
+        </section>
+
+        <section id="report" class="report hidden">
+          <nav class="tabs" aria-label="Report sections">
+            <button class="tab active" data-tab="overview">Overview</button>
+            <button class="tab" data-tab="findings">Findings</button>
+            <button class="tab" data-tab="clauses">Evidence</button>
+            <button class="tab" data-tab="benchmarks">Benchmarks</button>
+            <button class="tab" data-tab="scenarios">Actions</button>
+            <button class="tab" data-tab="ai">AI notes</button>
+            <button class="tab" data-tab="history">History</button>
+          </nav>
+
+          <section class="tab-panel active" id="tab-overview">
+            <div class="score-grid">
+              <article class="score-card">
+                <span>Risk score</span>
+                <strong id="riskScore">0</strong>
+                <p id="riskLevel">Low risk</p>
+              </article>
+              <article class="metric-card">
+                <span>Findings</span>
+                <strong id="findingCount">0</strong>
+                <p>Flagged clauses</p>
+              </article>
+              <article class="metric-card">
+                <span>Priority</span>
+                <strong id="severeCount">0</strong>
+                <p>Needs review</p>
+              </article>
+              <article class="metric-card">
+                <span>Density</span>
+                <strong id="riskDensity">0%</strong>
+                <p>Risk per clause</p>
+              </article>
+            </div>
+
+            <section class="panel summary-panel">
+              <div class="panel-heading">
+                <h3>Summary</h3>
+              </div>
+              <p id="summaryText"></p>
+              <div id="severityBars" class="severity-bars"></div>
+            </section>
+
+            <div class="split">
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>Readiness</h3>
+                </div>
+                <div id="readinessList" class="check-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>Risk domains</h3>
+                </div>
+                <div id="domainList" class="domain-list"></div>
+              </section>
+            </div>
+
+            <div class="split">
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>Missing safeguards</h3>
+                </div>
+                <div id="safeguardList" class="compact-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>Warnings</h3>
+                </div>
+                <div id="warningList" class="compact-list"></div>
+              </section>
+            </div>
+
+            <section class="panel">
+              <div class="panel-heading">
+                <h3>Contradiction signals</h3>
+              </div>
+              <div id="contradictionList" class="compact-list"></div>
+            </section>
+          </section>
+
+          <section class="tab-panel" id="tab-findings">
+            <div class="toolbar">
+              <label class="field inline-field">
+                <span>Severity</span>
+                <select id="severityFilter">
+                  <option value="all">All severities</option>
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </label>
+              <label class="field inline-field">
+                <span>Domain</span>
+                <select id="domainFilter">
+                  <option value="all">All domains</option>
+                </select>
+              </label>
+            </div>
+            <div id="findingsList" class="findings-list"></div>
+          </section>
+
+          <section class="tab-panel" id="tab-clauses">
+            <div class="toolbar">
+              <label class="toggle">
+                <input id="riskyOnlyToggle" type="checkbox" checked />
+                <span>Show flagged clauses only</span>
+              </label>
+            </div>
+            <div id="clauseList" class="clause-list"></div>
+          </section>
+
+          <section class="tab-panel" id="tab-benchmarks">
+            <div id="benchmarkList" class="benchmark-list"></div>
+          </section>
+
+          <section class="tab-panel" id="tab-scenarios">
+            <div class="split">
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>Possible consequences</h3>
+                </div>
+                <div id="scenarioList" class="scenario-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>Negotiation points</h3>
+                </div>
+                <div id="recommendations" class="recommendations"></div>
+              </section>
+            </div>
+            <section class="panel">
+              <div class="panel-heading">
+                <h3>Obligations</h3>
+              </div>
+              <div id="obligationList" class="obligation-list"></div>
+            </section>
+          </section>
+
+          <section class="tab-panel" id="tab-ai">
+            <div class="split">
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>AI reasoning notes</h3>
+                </div>
+                <div id="aiInsightList" class="compact-list"></div>
+              </section>
+              <section class="panel">
+                <div class="panel-heading">
+                  <h3>Jurisdiction notes</h3>
+                </div>
+                <div id="jurisdictionList" class="compact-list"></div>
+              </section>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="tab-history">
+            <div class="toolbar">
+              <button id="compareLatestButton" class="secondary-action">Compare latest versions</button>
+            </div>
+            <div id="comparisonList" class="compact-list"></div>
+            <div id="historyList" class="history-list"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
+

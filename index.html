@@ -17,11 +17,11 @@
           </div>
         </div>
         <div class="header-actions">
-          <span id="apiStatus" class="api-status checking">Checking API</span>
-          <button id="printButton" class="secondary-action" disabled>Print</button>
-          <button id="downloadButton" class="secondary-action" disabled>Text report</button>
-          <button id="pdfButton" class="secondary-action" disabled>PDF</button>
-          <button id="copyReportButton" class="secondary-action" disabled>Copy</button>
+          <span id="apiStatus" class="api-status checking" role="status">Checking API</span>
+          <button id="printButton" class="secondary-action" aria-label="Print report" disabled>Print</button>
+          <button id="downloadButton" class="secondary-action" aria-label="Download text report" disabled>Text report</button>
+          <button id="pdfButton" class="secondary-action" aria-label="Download PDF report" disabled>PDF</button>
+          <button id="copyReportButton" class="secondary-action" aria-label="Copy report to clipboard" disabled>Copy</button>
         </div>
       </header>
 
@@ -55,7 +55,7 @@
             <div class="meta-chip" id="parseStatus">Ready to parse</div>
           </div>
 
-          <textarea id="contractText" spellcheck="true" placeholder="Or paste contract text here..."></textarea>
+          <textarea id="contractText" spellcheck="true" aria-label="Paste contract text here" placeholder="Or paste contract text here..."></textarea>
         </section>
 
         <aside class="settings-panel">

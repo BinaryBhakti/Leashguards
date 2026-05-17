@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
+    "test": "node --test",
     "check": "node --check app.js && node --check server.js && node --check src/analyzer.js && node --check src/rules.js && node --check src/benchmarks.js && node --check src/report.js && node --check src/samples.js && node --check src/documentParser.js && node --check src/documentAiParser.js && node --check src/llmReasoner.js && node --check src/pdfReport.js && node --check src/jurisdictions.js && node --check src/auth.js && node --check src/storage.js && node --check src/security.js && node --check src/env.js"
   },
   "dependencies": {
     "@google-cloud/documentai": "^9.1.0",
+    "@google-cloud/storage": "^7.11.2",
     "@google/generative-ai": "^0.24.1",
     "formidable": "^3.5.2",
     "mammoth": "^1.8.0",
